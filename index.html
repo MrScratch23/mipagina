@@ -32,7 +32,30 @@
                 console.error("Error al acceder a la cámara:", error);
             }
         }
-        window.addEventListener("load", startCamera);
+        
+        async function loadAndRunMobileNet() {
+            try {
+                // Cargar el modelo MobileNet
+                const model = await mobilenet.load();
+                console.log("Modelo MobileNet cargado");
+                // Esperar a que el video tenga datos cargados
+                const video = document.getElementById('video');
+                video.addEventListener('loadeddata', async () => {
+                    // Clasificar la imagen actual del video
+                    const predictions = await model.classify(video);
+                    console.log(predictions);
+                    // Mostrar las predicciones en el contenedor de resultados
+                    document.getElementById('results').innerText = JSON.stringify(predictions, null, 2);
+                });
+            } catch (error) {
+                console.error("Error al cargar o ejecutar MobileNet:", error);
+            }
+        }
+        
+        window.addEventListener("load", () => {
+            startCamera();
+            loadAndRunMobileNet();
+        });
     </script>
 </body>
 </html>
